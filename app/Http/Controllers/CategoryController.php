@@ -15,7 +15,8 @@ class CategoryController extends Controller
     public function add_category(Request $request)
     {
         $data= new Category;
-        $data->category_name = $request->category_name;
+        $data->name = $request->name;
+        $data->description = $request->description;
         $data->save();
         return redirect()->back();
     }
@@ -42,7 +43,8 @@ class CategoryController extends Controller
     public function update_category(Request $request, $id)
     {
         $data= Category::find($id);
-        $data->category_name = $request->category_name;
+        $data->name = $request->name;
+        $data->description = $request->description;
         $data->save();
         return redirect('/display_category');
     }

@@ -1,5 +1,4 @@
 <div 
-    x-data="{ open: true }" 
     :class="open ? 'w-64' : 'w-20'"
     class="bg-gray-900 text-gray-100 h-screen fixed left-0 top-0 flex flex-col transition-all duration-300">
 
