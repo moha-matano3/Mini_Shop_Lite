@@ -22,7 +22,7 @@ class CategoryController extends Controller
 
     public function display_category()
     {
-        $category = Category::orderBy('category_name', 'asc')->get();
+        $category = Category::orderBy('name', 'asc')->get();
         return view('admin.layouts.disp_category',compact('category'));
     }
 
