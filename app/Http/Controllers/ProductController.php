@@ -120,4 +120,106 @@ class ProductController extends Controller
         $product = Product::with('category')->findOrFail($id);
         return view('customer.layouts.product_detail', compact('product'));
     }
+
+    public function addToCart($id)
+    {
+        $product = Product::findOrFail($id);
+
+        $cart = session()->get('cart', []);
+
+        if (isset($cart[$id])) {
+            $cart[$id]['quantity']++;
+        } else {
+            $cart[$id] = [
+                'name' => $product->name,
+                'price' => $product->price,
+                'quantity' => 1,
+                'image' => $product->product_img,
+            ];
+        }
+
+        session()->put('cart', $cart);
+
+        return redirect()->route('customer.browse')->with('success', 'Product added to cart!');
+    }
+
+    public function viewCart()
+    {
+        $cart = session()->get('cart', []);
+        if (!$cart || count($cart) === 0) {
+            return redirect()->route('customer.browse')->with('info', 'Your cart is empty!');
+        }
+        return view('customer.layouts.cart', compact('cart'));
+    }
+
+    public function removeFromCart($id)
+    {
+        $cart = session()->get('cart', []);
+        if (isset($cart[$id])) {
+            unset($cart[$id]);
+            session()->put('cart', $cart);
+        }
+
+        return redirect()->route('cart.view')->with('success', 'Product removed!');
+    }
+
+    public function checkout(Request $request)
+    {
+        $cart = session()->get('cart', []);
+
+        if (!$cart || count($cart) === 0) {
+            return redirect()->route('cart.view')->with('error', 'Your cart is empty.');
+        }
+
+        foreach ($cart as $id => $item) {
+            $product = \App\Models\Product::find($id);
+
+            if ($product) {
+                // Check if stock is enough
+                if ($product->stock >= $item['quantity']) {
+                    // Deduct stock
+                    $product->stock -= $item['quantity'];
+                    $product->save();
+                } else {
+                    return redirect()->route('cart.view')
+                                    ->with('error', "Not enough stock for {$product->name}.");
+                }
+            }
+        }
+
+        // Clear cart after successful checkout
+        session()->forget('cart');
+
+        return redirect()->route('customer.browse')
+                        ->with('success', 'Checkout successful! Your order has been placed.');
+    }
+
+
+    public function update(Request $request, $id)
+    {
+        $cart = session()->get('cart', []);
+
+        if(isset($cart[$id])) {
+            // Fetch product stock from DB
+            $product = \App\Models\Product::find($id);
+
+            if ($request->action === 'increase') {
+                // Check if stock allows increment
+                if ($cart[$id]['quantity'] < $product->stock) {
+                    $cart[$id]['quantity']++;
+                } else {
+                    return redirect()->route('cart.view')->with('error', 'Not enough stock available.');
+                }
+            } elseif ($request->action === 'decrease') {
+                $cart[$id]['quantity']--;
+                if ($cart[$id]['quantity'] <= 0) {
+                    unset($cart[$id]); // remove if qty 0
+                }
+            }
+
+            session()->put('cart', $cart);
+        }
+
+        return redirect()->route('cart.view');
+    }
 }

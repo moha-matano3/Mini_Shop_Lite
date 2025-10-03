@@ -35,13 +35,28 @@
 
       <!-- Actions -->
       <div class="flex items-center gap-4">
-        <!-- Cart -->
-        <a href="#" class="relative text-gray-600 hover:text-gray-900">
+      @php
+        $cart = session('cart', []);
+        $cartCount = is_array($cart) ? count($cart) : 0;
+      @endphp
+
+      @if($cartCount > 0)
+        <!-- Cart with items -->
+        <a href="{{ route('cart.view') }}" class="relative text-gray-600 hover:text-gray-900">
           <i class="fas fa-shopping-cart text-xl"></i>
           <span class="absolute -top-2 -right-2 bg-red-600 text-white text-xs px-1 rounded-full">
-            0
+            {{ $cartCount }}
           </span>
         </a>
+      @else
+        <!-- Disabled / empty cart -->
+        <span class="relative text-gray-400 cursor-not-allowed">
+          <i class="fas fa-shopping-cart text-xl"></i>
+          <span class="absolute -top-2 -right-2 bg-gray-400 text-white text-xs px-1 rounded-full">
+            0
+          </span>
+        </span>
+      @endif
 
         <!-- User -->
         <a href="#" class="text-gray-600 hover:text-gray-900">
