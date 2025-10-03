@@ -35,7 +35,7 @@ class AuthenticatedSessionController extends Controller
         } elseif ($user->userType === 'SuperAdmin') {
             return redirect()->route('superadmin.index');
         } else {
-            return redirect()->route('customer.index');
+            return redirect()->route('customer.browse');
         }
     }
 

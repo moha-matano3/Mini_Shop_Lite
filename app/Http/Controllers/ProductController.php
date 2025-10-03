@@ -89,4 +89,35 @@ class ProductController extends Controller
         $data->save();
         return redirect('/display_product')->with('success', 'Product updated successfully!');
     }
+
+    public function search_filter_product(Request $request)
+    {
+        $categories = Category::all();
+
+        $query = Product::with('category');
+
+        // Apply category filter
+        if ($request->filled('category')) {
+            $query->where('category_id', $request->category);
+        }
+
+        // Apply search filter
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'LIKE', "%{$search}%")
+                ->orWhere('description', 'LIKE', "%{$search}%");
+            });
+        }
+
+        $products = $query->orderBy('name', 'asc')->get();
+
+        return view('customer.browse', compact('products', 'categories'));
+    }
+
+    public function product_detail($id)
+    {
+        $product = Product::with('category')->findOrFail($id);
+        return view('customer.layouts.product_detail', compact('product'));
+    }
 }

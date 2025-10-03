@@ -26,8 +26,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('superadmin.index');
 
     Route::get('/customer', function () {
-        return view('customer.index');
-    })->name('customer.index');
+        return view('customer.browse');
+    })->name('customer.browse');
 });
 
 Route::get('/category_page',[CategoryController::class,'category_page']);
@@ -44,5 +44,8 @@ Route::get('/product_delete/{id}',[ProductController::class,'product_delete']);
 Route::get('/edit_product/{id}',[ProductController::class,'edit_product']);
 Route::post('/update_product/{id}',[ProductController::class,'update_product']);
 
+
+Route::get('/customer', [ProductController::class, 'search_filter_product'])->name('customer.browse');
+Route::get('/customer/product/{id}', [ProductController::class, 'product_detail'])->name('customer.layouts.product_detail');
 
 require __DIR__.'/auth.php';
