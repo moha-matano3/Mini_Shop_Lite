@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Category;
+use App\Models\Order;
+use App\Models\OrderItem;
 
 class ProductController extends Controller
 {
@@ -168,26 +171,50 @@ class ProductController extends Controller
         $cart = session()->get('cart', []);
 
         if (!$cart || count($cart) === 0) {
-            return redirect()->route('cart.view')->with('error', 'Your cart is empty.');
+            return redirect()->route('customer.browse')->with('error', 'Your cart is empty.');
         }
 
+        $totalAmount = 0;
+
+        // Validate stock + calculate total
         foreach ($cart as $id => $item) {
             $product = \App\Models\Product::find($id);
 
-            if ($product) {
-                // Check if stock is enough
-                if ($product->stock >= $item['quantity']) {
-                    // Deduct stock
-                    $product->stock -= $item['quantity'];
-                    $product->save();
-                } else {
-                    return redirect()->route('cart.view')
-                                    ->with('error', "Not enough stock for {$product->name}.");
-                }
+            if (!$product) {
+                return redirect()->route('customer.cart')->with('error', "Product not found.");
             }
+
+            if ($product->stock < $item['quantity']) {
+                return redirect()->route('customer.cart')->with('error', "Not enough stock for {$product->name}.");
+            }
+
+            $totalAmount += $item['price'] * $item['quantity'];
         }
 
-        // Clear cart after successful checkout
+        // Create the order
+        $order = Order::create([
+            'user_id' => Auth::id(),
+            'total' => $totalAmount,
+        ]);
+
+        // Create order items + update stock
+        foreach ($cart as $id => $item) {
+            $product = \App\Models\Product::find($id);
+
+            OrderItem::create([
+                'order_id' => $order->id,
+                'product_id' => $id,
+                'quantity' => $item['quantity'],
+                'unit_price' => $item['price'],
+                'line_total' => $item['price'] * $item['quantity'],
+            ]);
+
+            // Deduct stock
+            $product->stock -= $item['quantity'];
+            $product->save();
+        }
+
+        // Clear cart
         session()->forget('cart');
 
         return redirect()->route('customer.browse')

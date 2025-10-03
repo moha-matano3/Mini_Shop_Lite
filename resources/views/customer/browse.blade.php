@@ -6,7 +6,11 @@
   <!-- Category Filter -->
   <div class="flex justify-end mb-6">
     <form method="GET" action="{{ route('customer.browse') }}" class="flex space-x-2">
-      <select name="category" class="border border-gray-300 rounded px-3 py-2">
+      <select 
+        name="category" 
+        onchange="this.form.submit()"
+        class="w-64 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+      >
         <option value="">All Categories</option>
         @foreach ($categories as $category)
           <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
@@ -14,9 +18,6 @@
           </option>
         @endforeach
       </select>
-      <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
-        Filter
-      </button>
     </form>
   </div>
 

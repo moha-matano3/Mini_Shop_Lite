@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\OrderController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -48,11 +49,17 @@ Route::post('/update_product/{id}',[ProductController::class,'update_product']);
 Route::get('/customer', [ProductController::class, 'search_filter_product'])->name('customer.browse');
 Route::get('/customer/product/{id}', [ProductController::class, 'product_detail'])->name('customer.layouts.product_detail');
 
+Route::middleware('auth')->group(function () {
+    Route::post('/cart/add/{id}', [ProductController::class, 'addToCart'])->name('cart.add');
+    Route::get('customer/cart', [ProductController::class, 'viewCart'])->name('cart.view');
+    Route::post('/cart/remove/{id}', [ProductController::class, 'removeFromCart'])->name('cart.remove');
+    Route::match(['get', 'post'],'/cart/checkout', [ProductController::class, 'checkout'])->name('cart.checkout');
+    Route::post('/cart/update/{id}', [ProductController::class, 'update'])->name('cart.update');
+});
 
-Route::post('/cart/add/{id}', [ProductController::class, 'addToCart'])->name('cart.add');
-Route::get('customer/cart', [ProductController::class, 'viewCart'])->name('cart.view');
-Route::post('/cart/remove/{id}', [ProductController::class, 'removeFromCart'])->name('cart.remove');
-Route::post('/cart/checkout', [ProductController::class, 'checkout'])->name('cart.checkout');
-Route::post('/cart/update/{id}', [ProductController::class, 'update'])->name('cart.update');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/admin/orders', [OrderController::class, 'order_show'])->name('admin.layouts.order');
+    Route::get('/admin/orders/{id}', [OrderController::class, 'show_order_detail'])->name('admin.layouts.order_detail');
+});
 
 require __DIR__.'/auth.php';
