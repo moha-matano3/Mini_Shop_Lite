@@ -4,6 +4,15 @@
     <meta charset="UTF-8">
     <title>@yield('title', 'Admin Dashboard')</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+        .notify-container 
+        {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999; /* Ensure it's above other elements */
+        }
+    </style>
 </head>
 <body class="bg-gray-100" x-data="{ open: true }">
 
@@ -23,6 +32,10 @@
                        class="w-full md:w-1/2 px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
 
+            <div class="notify-container">
+                <x-notify::notify />
+            </div>
+
             {{-- Page Content --}}
             <main 
                 class="mt-32 p-6 transition-all duration-300"
@@ -34,5 +47,7 @@
         </div>
     </div>
 
+    <x-notify::notify />
+    @notifyJs
 </body>
 </html>

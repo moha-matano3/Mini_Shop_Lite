@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Category;
 use App\Models\Order;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OrderConfirmationMail;
 use App\Models\OrderItem;
 
 class ProductController extends Controller
@@ -213,6 +215,8 @@ class ProductController extends Controller
             $product->stock -= $item['quantity'];
             $product->save();
         }
+        // Send order confirmation email
+        Mail::to(Auth::user()->email)->send(new OrderConfirmationMail($order));
 
         // Clear cart
         session()->forget('cart');

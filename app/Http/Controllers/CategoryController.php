@@ -18,6 +18,7 @@ class CategoryController extends Controller
         $data->name = $request->name;
         $data->description = $request->description;
         $data->save();
+        notify()->success('Category added successfully');
         return redirect()->back();
     }
 
@@ -31,6 +32,7 @@ class CategoryController extends Controller
     {
         $category = Category::find($id);
         $category->delete();
+        notify()->success('Category deleted successfully');
         return redirect()->back();
     }
 
@@ -46,6 +48,7 @@ class CategoryController extends Controller
         $data->name = $request->name;
         $data->description = $request->description;
         $data->save();
+        notify()->success('Category update successfully');
         return redirect('/display_category');
     }
 }
