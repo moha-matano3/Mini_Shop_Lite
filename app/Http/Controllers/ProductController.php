@@ -52,7 +52,8 @@ class ProductController extends Controller
         }
 
         $product->save();
-        return redirect()->back()->with('success', 'Product added successfully!');
+        notify() -> success('Product added successfully');
+        return redirect()->back();
     }
 
     public function display_product()
@@ -65,7 +66,8 @@ class ProductController extends Controller
     {
         $product = Product::findOrFail($id);
         $product->delete();
-        return redirect()->back()->with('success', 'Product deleted successfully!');
+        notify() -> success('Product deleted successfully');
+        return redirect()->back();
     }
 
     public function edit_product($id)
@@ -92,7 +94,8 @@ class ProductController extends Controller
         }
 
         $data->save();
-        return redirect('/display_product')->with('success', 'Product updated successfully!');
+        notify() -> success('Product updated successfully');
+        return redirect('/display_product');
     }
 
     public function search_filter_product(Request $request)
@@ -144,15 +147,16 @@ class ProductController extends Controller
         }
 
         session()->put('cart', $cart);
-
-        return redirect()->route('customer.browse')->with('success', 'Product added to cart!');
+        notify() -> success('Product added to cart');
+        return redirect()->route('customer.browse');
     }
 
     public function viewCart()
     {
         $cart = session()->get('cart', []);
         if (!$cart || count($cart) === 0) {
-            return redirect()->route('customer.browse')->with('info', 'Your cart is empty!');
+            return redirect()->route('customer.browse');
+            notify() -> info('Your cart is empty!');
         }
         return view('customer.layouts.cart', compact('cart'));
     }
@@ -164,8 +168,8 @@ class ProductController extends Controller
             unset($cart[$id]);
             session()->put('cart', $cart);
         }
-
-        return redirect()->route('cart.view')->with('success', 'Product removed!');
+        notify() -> success('Product removed!');
+        return redirect()->route('cart.view');
     }
 
     public function checkout(Request $request)
@@ -173,7 +177,8 @@ class ProductController extends Controller
         $cart = session()->get('cart', []);
 
         if (!$cart || count($cart) === 0) {
-            return redirect()->route('customer.browse')->with('error', 'Your cart is empty.');
+            notify() -> error('Your cart is empty.');
+            return redirect()->route('customer.browse');
         }
 
         $totalAmount = 0;
@@ -183,11 +188,13 @@ class ProductController extends Controller
             $product = \App\Models\Product::find($id);
 
             if (!$product) {
-                return redirect()->route('customer.cart')->with('error', "Product not found.");
+                notify() -> error('Product not found.');
+                return redirect()->route('customer.cart');
             }
 
             if ($product->stock < $item['quantity']) {
-                return redirect()->route('customer.cart')->with('error', "Not enough stock for {$product->name}.");
+                notify() -> error("Not enough stock for {$product->name}.");
+                return redirect()->route('customer.cart');
             }
 
             $totalAmount += $item['price'] * $item['quantity'];
@@ -221,8 +228,8 @@ class ProductController extends Controller
         // Clear cart
         session()->forget('cart');
 
-        return redirect()->route('customer.browse')
-                        ->with('success', 'Checkout successful! Your order has been placed.');
+        notify()->success('Checkout successful! Your order has been placed.');
+        return redirect()->route('customer.browse');   
     }
 
 
@@ -239,7 +246,8 @@ class ProductController extends Controller
                 if ($cart[$id]['quantity'] < $product->stock) {
                     $cart[$id]['quantity']++;
                 } else {
-                    return redirect()->route('cart.view')->with('error', 'Not enough stock available.');
+                    notify()->error('Not enough stock available.');
+                    return redirect()->route('cart.view');
                 }
             } elseif ($request->action === 'decrease') {
                 $cart[$id]['quantity']--;

@@ -6,6 +6,15 @@
   <title>@yield('title', 'MiniShopLite')</title>
   @vite(['resources/css/app.css', 'resources/js/app.js'])
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
+  <style>
+    .notify-container 
+    {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999; /* Ensure it's above other elements */
+    }
+  </style>
 </head>
 <body class="bg-gray-100 text-gray-800 flex flex-col min-h-screen">
 
@@ -74,6 +83,10 @@
     </div>
   </nav>
 
+  <div class="notify-container">
+    <x-notify::notify />
+  </div>
+
   {{-- Main Content --}}
   <main class="flex-1 container mx-auto px-6 mt-28">
     @yield('content')
@@ -83,6 +96,9 @@
   <footer class="bg-gray-900 text-gray-400 text-center py-6 mt-10">
     <p>&copy; {{ date('Y') }} MiniShopLite. All Rights Reserved.</p>
   </footer>
+
+  <x-notify::notify />
+    @notifyJs
 
 </body>
 </html>
