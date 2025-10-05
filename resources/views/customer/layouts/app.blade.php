@@ -24,7 +24,6 @@
       
       <!-- Logo -->
       <a href="{{ route('customer.browse') }}" class="flex items-center gap-2">
-        <img src="{{ asset('images/logo.png') }}" class="h-10" alt="Logo">
         <span class="font-bold text-xl text-gray-800">MiniShopLite</span>
       </a>
 

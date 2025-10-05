@@ -3,6 +3,10 @@
 @section('title', 'Orders')
 
 @section('content')
+
+@include('admin.layouts.searchbar')
+
+
 <div class="bg-white shadow rounded-lg p-6">
     <h2 class="text-2xl font-bold mb-4">📦 Orders</h2>
 

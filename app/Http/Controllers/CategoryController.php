@@ -22,10 +22,17 @@ class CategoryController extends Controller
         return redirect()->back();
     }
 
-    public function display_category()
+    public function display_category(Request $request)
     {
-        $category = Category::orderBy('name', 'asc')->get();
-        return view('admin.layouts.disp_category',compact('category'));
+        $query = Category::query();
+
+        if ($request->filled('search')) {
+            $query->where('name', 'LIKE', "%{$request->search}%");
+        }
+
+        $category = $query->orderBy('name')->get();
+
+        return view('admin.layouts.disp_category', compact('category'));
     }
 
     public function category_delete($id)

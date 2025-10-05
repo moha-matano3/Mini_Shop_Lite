@@ -3,6 +3,9 @@
 @section('title', 'Admin Dashboard')
 
 @section('content')
+
+@include('admin.layouts.searchbar')
+
 <div class="bg-white shadow-md rounded-lg p-6">
     <h2 class="text-2xl font-bold text-gray-800 mb-4">📂 Categories</h2>
 

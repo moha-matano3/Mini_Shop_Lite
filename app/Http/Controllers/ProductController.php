@@ -56,9 +56,20 @@ class ProductController extends Controller
         return redirect()->back();
     }
 
-    public function display_product()
+    public function display_product(Request $request)
     {
-        $products = Product::with('category')->orderBy('name', 'asc')->get();
+        $query = Product::with('category');
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'LIKE', "%{$search}%")
+                ->orWhere('description', 'LIKE', "%{$search}%");
+            });
+        }
+
+        $products = $query->orderBy('name', 'asc')->get();
+
         return view('admin.layouts.disp_product', compact('products'));
     }
 
