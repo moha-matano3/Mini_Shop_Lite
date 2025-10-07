@@ -7,6 +7,11 @@ use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
+
+    /* 
+        Page to display all orders in a table.
+        one can search orders by email or name 
+    */
     public function order_show(Request $request)
     {
         $query = Order::with('user')->latest();
@@ -25,6 +30,13 @@ class OrderController extends Controller
         return view('admin.layouts.order', compact('orders'));
     }
 
+
+    /* 
+        Show order details by ID 
+        data such as user, items and product as loaded in the view
+        there is a relationship between order_items and orders and orders
+        is already related to uder_id
+    */
     public function show_order_detail($id)
     {
         $order = Order::with(['user', 'items.product'])->findOrFail($id);
